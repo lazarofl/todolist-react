@@ -1,0 +1,6 @@
+version: "3"
+services:
+  todolist:
+    build: .
+    ports:
+      - "5000:80"
