@@ -31,13 +31,15 @@ jobs:
       - run:
           name: Run tests
           command: npm test
-  
-  # build and push a docker image
-  docker-build:  
-    steps:
+
+      # build and push a docker image
+      - setup_remote_docker:
+          docker_layer_caching: true
+        
       - run:
-        name: Build Docker image
-        command: docker build -t $ORGANIZATION/$IMAGE_NAME:$CIRCLE_BUILD_NUM .
+          name: Build Docker image
+          command: docker build -t $ORGANIZATION/$IMAGE_NAME:$CIRCLE_BUILD_NUM .
+    
 workflows:
   # Below is the definition of your workflow.
   # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the build-and-test job above.
@@ -46,6 +48,3 @@ workflows:
   todolist-workflow: 
     jobs:
       - build-and-test
-      # For running simple node tests, you could optionally use the node/test job from the orb to replicate and replace the job above in fewer lines.
-      # - node/test
-      - docker-build
