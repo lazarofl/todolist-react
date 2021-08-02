@@ -31,7 +31,17 @@ jobs:
       - run:
           name: Run tests
           command: npm test
-
+  
+  # build and push a docker image
+  docker-build:  
+    steps:
+        - run:
+          name: Build Docker image
+          command: |
+            docker build -t $ORGANIZATION/$IMAGE_NAME:$CIRCLE_BUILD_NUM .
+            # echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            # docker push $ORGANIZATION/$IMAGE_NAME:$CIRCLE_BUILD_NUM
+        - 
 workflows:
   # Below is the definition of your workflow.
   # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the build-and-test job above.
