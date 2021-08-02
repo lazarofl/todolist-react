@@ -10,7 +10,19 @@ orbs:
 
 
 jobs:
-  # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
+  docker-build:
+    docker:
+      - image: cimg/node:15.1
+    steps:
+      - checkout
+    # build and push a docker image
+      - setup_remote_docker:
+          docker_layer_caching: true
+        
+      - run:
+          name: Build Docker image
+          command: docker build -t $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> .
+
   build-and-test:  
     # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
     # You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
@@ -31,16 +43,9 @@ jobs:
       - run:
           name: Run tests
           command: npm test
-
-      # build and push a docker image
-      - setup_remote_docker:
-          docker_layer_caching: true
-        
-      - run:
-          name: Build Docker image
-          command: docker build -t $ORGANIZATION/$IMAGE_NAME:$CIRCLE_BUILD_NUM .
-    
+      
 workflows:
+  version: 2
   # Below is the definition of your workflow.
   # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the build-and-test job above.
   # CircleCI will run this workflow on every commit.
@@ -48,3 +53,6 @@ workflows:
   todolist-workflow: 
     jobs:
       - build-and-test
+      - docker-build:
+          requires:
+            - build-and-test
