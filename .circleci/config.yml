@@ -10,18 +10,24 @@ orbs:
 
 
 jobs:
-  docker-build:
+  docker-build-deploy:
     docker:
       - image: cimg/node:15.1
     steps:
       - checkout
-    # build and push a docker image
+      
+      # build and push a docker image
       - setup_remote_docker:
           docker_layer_caching: true
         
       - run:
           name: Build Docker image
-          command: docker build -t $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> .
+          command: |
+            sudo curl https://cli-assets.heroku.com/install.sh | sh
+            docker build -f Dockerfile.heroku -t $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> .
+            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:login
+            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:push -a $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> $APP_NAME
+            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:release -a $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> $APP_NAME
 
   build-and-test:  
     # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
@@ -53,6 +59,6 @@ workflows:
   todolist-workflow: 
     jobs:
       - build-and-test
-      - docker-build:
+      - docker-build-deploy:
           requires:
             - build-and-test
