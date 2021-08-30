@@ -25,8 +25,8 @@ jobs:
           command: |
             sudo curl https://cli-assets.heroku.com/install.sh | sh
             HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:login
-            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:push --app=$APP_NAME $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> web
-            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:release --app=$APP_NAME $ORGANIZATION/$IMAGE_NAME:<<pipeline.number>> web
+            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:push --app=$APP_NAME web
+            HEROKU_API_KEY=${HEROKU_TOKEN} heroku container:release --app=$APP_NAME web
 
   build-and-test:  
     # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
